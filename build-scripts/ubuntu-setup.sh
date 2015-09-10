@@ -1,0 +1,64 @@
+set -x
+
+apt-get update
+apt-get upgrade -y
+apt-get install -y acpid ntp
+
+cat > /etc/dhcp/dhclient-exit-hooks.d/sethostname <<'EOM'
+#!/bin/sh
+# dhclient change hostname script for Ubuntu
+# /etc/dhcp/dhclient-exit-hooks.d/sethostname
+
+if [ "$reason" != "BOUND" ] && [ "$reason" != "RENEW" ] && [ "$reason" != "REBIND" ] && [ "$reason" != "REBOOT" ]; then
+    exit 0
+fi
+
+oldhostname=$(hostname -s)
+if [ "$oldhostname" = "localhost" ]; then
+    echo "Configuring fresh instance with IP $new_ip_address and hostname $new_host_name.$new_domain_name"
+    # Rename Host
+    echo $new_host_name > /etc/hostname
+    hostname -b -F /etc/hostname
+    echo $new_host_name > /proc/sys/kernel/hostname
+
+    # Recreate SSH2
+    export DEBIAN_FRONTEND=noninteractive
+    dpkg-reconfigure openssh-server
+
+    # Update /etc/hosts
+    echo 127.0.0.1 localhost > /etc/hosts
+    echo "$new_ip_address $new_host_name.$new_domain_name $new_host_name" >> /etc/hosts
+    echo >> /etc/hosts
+    echo ::1 localhost ip6-localhost ip6-loopback >> /etc/hosts
+    echo ff02::1 ip6-allnodes >> /etc/hosts
+    echo ff02::2 ip6-allrouters >> /etc/hosts
+fi
+EOM
+
+chmod 644 /etc/dhcp/dhclient-exit-hooks.d/sethostname
+
+rm -f /etc/udev/rules.d/70*
+rm -f /var/lib/dhcp/dhclient.*
+rm -f /etc/ssh/*key*
+if [ -f /var/log/audit/audit.log ]; then cat /dev/null > /var/log/audit/audit.log; fi
+cat /dev/null > /var/log/wtmp 2>/dev/null
+logrotate -f /etc/logrotate.conf 2>/dev/null
+rm -f /var/log/*-* /var/log/*.gz 2>/dev/null
+rm -f /var/log/upstart/*.log /var/log/upstart/*.log.*.gz
+
+echo "localhost" > /etc/hostname
+hostname -b -F /etc/hostname
+
+passwd --expire root
+
+wget https://raw.githubusercontent.com/shapeblue/cloudstack-scripts/master/cloud-set-guest-password-ubuntu -O /etc/init.d/cloud-set-guest-password-ubuntu
+wget https://raw.githubusercontent.com/shapeblue/cloudstack-scripts/master/cloud-set-guest-sshkey-ubuntu -O /etc/init.d/cloud-set-guest-sshkey-ubuntu
+
+update-rc.d cloud-set-guest-password-ubuntu defaults
+update-rc.d cloud-set-guest-password-ubuntu enable
+update-rc.d cloud-set-guest-sshkey-ubuntu defaults
+update-rc.d cloud-set-guest-sshkey-ubuntu enable
+
+history -c
+unset HISTFILE
+
