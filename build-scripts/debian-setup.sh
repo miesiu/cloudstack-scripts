@@ -1,13 +1,13 @@
 set -x
 
-apt-get update
-apt-get upgrade -y
-apt-get install -y acpid ntp
-
 cat > /etc/dhcp/dhclient-exit-hooks.d/sethostname <<'EOM'
 #!/bin/sh
 # dhclient change hostname script for Debian
 # /etc/dhcp/dhclient-exit-hooks.d/sethostname
+
+# Reconfigure openssh keys if not generated
+export DEBIAN_FRONTEND=noninteractive
+test -f /etc/ssh/ssh_host_dsa_key || dpkg-reconfigure openssh-server
 
 if [ "$reason" != "BOUND" ] && [ "$reason" != "RENEW" ] && [ "$reason" != "REBIND" ] && [ "$reason" != "REBOOT" ]; then
     exit 0
@@ -20,10 +20,6 @@ if [ "$oldhostname" = "localhost" ]; then
     echo $new_host_name > /etc/hostname
     hostname -b -F /etc/hostname
     echo $new_host_name > /proc/sys/kernel/hostname
-
-    # Recreate SSH2
-    export DEBIAN_FRONTEND=noninteractive
-    dpkg-reconfigure openssh-server
 
     # Update /etc/hosts
     echo 127.0.0.1 localhost > /etc/hosts
