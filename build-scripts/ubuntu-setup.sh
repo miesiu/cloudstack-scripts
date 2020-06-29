@@ -45,10 +45,13 @@ rm -f /var/log/upstart/*.log /var/log/upstart/*.log.*.gz
 echo "localhost" > /etc/hostname
 hostname -b -F /etc/hostname
 
-passwd --expire root
+#passwd --expire root
 
-wget https://raw.githubusercontent.com/shapeblue/cloudstack-scripts/master/cloud-set-guest-password-ubuntu -O /etc/init.d/cloud-set-guest-password-ubuntu
-wget https://raw.githubusercontent.com/shapeblue/cloudstack-scripts/master/cloud-set-guest-sshkey-ubuntu -O /etc/init.d/cloud-set-guest-sshkey-ubuntu
+wget https://raw.githubusercontent.com/miesiu/cloudstack-scripts/master/cloud-set-guest-password-ubuntu -O /etc/init.d/cloud-set-guest-password-ubuntu
+wget https://raw.githubusercontent.com/miesiu/cloudstack-scripts/master/cloud-set-guest-sshkey-ubuntu -O /etc/init.d/cloud-set-guest-sshkey-ubuntu
+
+chmod +x /etc/init.d/cloud-set-guest-sshkey-ubuntu
+chmod +x /etc/init.d/cloud-set-guest-sshkey-ubuntu
 
 update-rc.d cloud-set-guest-password-ubuntu defaults
 update-rc.d cloud-set-guest-password-ubuntu enable
