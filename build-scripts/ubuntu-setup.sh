@@ -53,10 +53,8 @@ wget https://raw.githubusercontent.com/miesiu/cloudstack-scripts/master/cloud-se
 chmod +x /etc/init.d/cloud-set-guest-password-ubuntu
 chmod +x /etc/init.d/cloud-set-guest-sshkey-ubuntu
 
-update-rc.d cloud-set-guest-password-ubuntu defaults
-update-rc.d cloud-set-guest-password-ubuntu enable
-update-rc.d cloud-set-guest-sshkey-ubuntu defaults
-update-rc.d cloud-set-guest-sshkey-ubuntu enable
+systemctl enable cloud-set-guest-password-ubuntu
+systemctl enable cloud-set-guest-sshkey-ubuntu
 
 history -c
 unset HISTFILE
