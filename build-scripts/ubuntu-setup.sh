@@ -50,7 +50,7 @@ hostname -b -F /etc/hostname
 wget https://raw.githubusercontent.com/miesiu/cloudstack-scripts/master/cloud-set-guest-password-ubuntu -O /etc/init.d/cloud-set-guest-password-ubuntu
 wget https://raw.githubusercontent.com/miesiu/cloudstack-scripts/master/cloud-set-guest-sshkey-ubuntu -O /etc/init.d/cloud-set-guest-sshkey-ubuntu
 
-chmod +x /etc/init.d/cloud-set-guest-sshkey-ubuntu
+chmod +x /etc/init.d/cloud-set-guest-password-ubuntu
 chmod +x /etc/init.d/cloud-set-guest-sshkey-ubuntu
 
 update-rc.d cloud-set-guest-password-ubuntu defaults
