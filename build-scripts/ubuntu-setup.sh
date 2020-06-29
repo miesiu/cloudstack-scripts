@@ -45,7 +45,7 @@ rm -f /var/log/upstart/*.log /var/log/upstart/*.log.*.gz
 echo "localhost" > /etc/hostname
 hostname -b -F /etc/hostname
 
-#passwd --expire root
+passwd --expire clouduser
 
 wget https://raw.githubusercontent.com/miesiu/cloudstack-scripts/master/cloud-set-guest-password-ubuntu -O /etc/init.d/cloud-set-guest-password-ubuntu
 wget https://raw.githubusercontent.com/miesiu/cloudstack-scripts/master/cloud-set-guest-sshkey-ubuntu -O /etc/init.d/cloud-set-guest-sshkey-ubuntu
